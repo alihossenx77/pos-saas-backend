@@ -1,0 +1,25 @@
+server:
+  port: 5000
+
+spring:
+  application:
+    name: pos-saas
+  datasource:
+    url: jdbc:mysql://localhost:3306/pos_saas?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
+  jpa:
+    hibernate:
+      ddl-auto: update        # switch to Flyway migrations before production
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  jwt:
+    # Base64 encoded, at least 32 bytes. Generate: openssl rand -base64 32
+    secret: ${JWT_SECRET:bXktc3VwZXItc2VjcmV0LWtleS1mb3ItcG9zLXNhYXMtYXBwLTIwMjYtY2hhbmdlLW1l}
+    expiration-ms: 86400000   # 24h
+  cors:
+    allowed-origins: http://localhost:5173,http://localhost:3000
