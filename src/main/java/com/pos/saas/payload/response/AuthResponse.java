@@ -1,5 +1,6 @@
-package com.pos.saas.payload;
+package com.pos.saas.payload.response;
 
+import com.pos.saas.payload.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

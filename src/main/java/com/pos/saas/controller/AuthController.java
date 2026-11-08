@@ -1,9 +1,9 @@
 package com.pos.saas.controller;
 
-import com.pos.saas.payload.AuthResponse;
-import com.pos.saas.payload.LoginRequest;
-import com.pos.saas.payload.SignupRequest;
 import com.pos.saas.payload.UserDto;
+import com.pos.saas.payload.request.SignupRequest;
+import com.pos.saas.payload.response.AuthResponse;
+import com.pos.saas.payload.request.LoginRequest;
 import com.pos.saas.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

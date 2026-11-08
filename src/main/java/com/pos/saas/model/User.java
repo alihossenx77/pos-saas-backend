@@ -18,8 +18,8 @@ public class User {
     @Column(nullable = false)
     private String fullName;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @Column(nullable = false, unique = true, length = 150)
+    private String email;          // always stored lowercase
 
     @Column(nullable = false)
     private String password;
@@ -30,19 +30,32 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
 
-    /** Tenant discriminator. Null only for platform super admins. */
-    @Column(name = "tenant_id")
-    private Long tenantId;
+    /** Store an employee works in. Null for store admins (they own stores) and other roles. */
+    @Column(name = "store_id")
+    private Long storeId;
+
+    @Column(name = "branch_id")
+    private Long branchId;
 
     @Builder.Default
     @Column(nullable = false)
     private boolean active = true;
 
+    private LocalDateTime lastLogin;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     @PrePersist
     void onCreate() {
         createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

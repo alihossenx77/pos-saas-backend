@@ -29,7 +29,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .subject(user.getEmail())
                 .claim("role", user.getRole().name())
-                .claim("tenantId", user.getTenantId())
+                .claim("uid", user.getId())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expirationMs))
                 .signWith(key)
