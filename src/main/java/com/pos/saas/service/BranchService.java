@@ -7,6 +7,7 @@ import com.pos.saas.model.User;
 import com.pos.saas.payload.dto.BranchDto;
 import com.pos.saas.payload.request.BranchRequest;
 import com.pos.saas.repository.BranchRepository;
+import com.pos.saas.repository.InventoryRepository;
 import com.pos.saas.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ public class BranchService {
 
     private final BranchRepository branchRepository;
     private final UserRepository userRepository;
+    private final InventoryRepository inventoryRepository;
     private final AccessService access;
 
     @Transactional
@@ -76,6 +78,10 @@ public class BranchService {
         if (userRepository.existsByBranchId(branch.getId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Cannot delete a branch that still has employees. Move or remove them first.");
+        }
+        if (inventoryRepository.existsByBranchId(branch.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Cannot delete a branch that still has stock records. Remove its inventory first.");
         }
         branchRepository.delete(branch);
     }

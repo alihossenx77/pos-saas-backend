@@ -30,7 +30,7 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
 
-    /** Store an employee works in. Null for store admins (they own stores) and other roles. */
+    /** The store this user belongs to. Admin: set when they create their store. Employees: set when added. */
     @Column(name = "store_id")
     private Long storeId;
 

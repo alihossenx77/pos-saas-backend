@@ -10,8 +10,8 @@ public class EmployeeUpdateRequest {
     @Size(min = 2, max = 100)
     private String fullName;
 
-    @Pattern(regexp = "^\\+?[0-9 ()-]{7,20}$",
-            message = "Phone must be 7-20 characters: digits, spaces, ( ) - and an optional leading +")
+    @Pattern(regexp = "^(|\\+?[0-9 ()-]{7,20})$",
+            message = "Please provide a valid phone number")
     private String phone;
 
     @Size(min = 8, max = 72, message = "Password must be 8-72 characters")

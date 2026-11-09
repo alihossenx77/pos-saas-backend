@@ -2,7 +2,7 @@ package com.pos.saas.service;
 
 import com.pos.saas.domain.UserRole;
 import com.pos.saas.model.User;
-import com.pos.saas.payload.UserDto;
+import com.pos.saas.payload.dto.UserDto;
 import com.pos.saas.payload.request.LoginRequest;
 import com.pos.saas.payload.request.SignupRequest;
 import com.pos.saas.payload.response.AuthResponse;
@@ -28,7 +28,10 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
 
-    /** Public signup creates a STORE_ADMIN account. Stores are created afterwards via POST /api/stores. */
+    /**
+     * Public signup. Default role is STORE_ADMIN; ROLE_USER is also allowed.
+     * Branch managers / cashiers are created by a store admin, super admins are created manually.
+     */
     @Transactional
     public AuthResponse signup(SignupRequest req) {
         String email = normalize(req.getEmail());
@@ -36,8 +39,10 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already registered");
         }
 
-        if(req.getRole() == UserRole.ROLE_SUPER_ADMIN){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to perform this action");
+        UserRole role = req.getRole() == null ? UserRole.ROLE_STORE_ADMIN : req.getRole();
+        if (role != UserRole.ROLE_STORE_ADMIN && role != UserRole.ROLE_USER) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "This role cannot be chosen at signup. Branch managers and cashiers are added by a store admin.");
         }
 
         User user = userRepository.save(User.builder()
@@ -45,11 +50,10 @@ public class AuthService {
                 .email(email)
                 .password(passwordEncoder.encode(req.getPassword()))
                 .phone(req.getPhone())
-                .role(req.getRole())
+                .role(role)
                 .build());
 
-        return new AuthResponse(jwtProvider.generateToken(user),
-                "Registered successfully. Create your first store to get started.", UserDto.from(user));
+        return new AuthResponse(jwtProvider.generateToken(user), UserDto.from(user));
     }
 
     public AuthResponse login(LoginRequest req) {
@@ -63,7 +67,7 @@ public class AuthService {
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
 
-        return new AuthResponse(jwtProvider.generateToken(user), "Login successful", UserDto.from(user));
+        return new AuthResponse(jwtProvider.generateToken(user), UserDto.from(user));
     }
 
     public UserDto getByEmail(String email) {

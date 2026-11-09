@@ -28,8 +28,8 @@ public class StoreDto {
                 .storeType(s.getStoreType()).address(s.getAddress())
                 .phone(s.getPhone()).email(s.getEmail())
                 .status(s.getStatus())
-                .storeAdminId(s.getStoreAdminId().getId())
-                .storeAdminName(s.getStoreAdminId().getFullName())
+                .storeAdminId(s.getStoreAdmin().getId())
+                .storeAdminName(s.getStoreAdmin().getFullName())
                 .createdAt(s.getCreatedAt()).updatedAt(s.getUpdatedAt())
                 .build();
     }

@@ -46,6 +46,15 @@ public class AccessService {
         return u;
     }
 
+    /** Logged-in user who already belongs to a store (admin after creating it, or an employee). */
+    public User currentStoreUser() {
+        User u = currentUser();
+        if (u.getStoreId() == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Create your store first");
+        }
+        return u;
+    }
+
     /** The logged-in store admin's store. */
     public Store myStore() {
         User admin = currentAdmin();

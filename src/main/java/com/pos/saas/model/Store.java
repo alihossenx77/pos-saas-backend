@@ -38,7 +38,7 @@ public class Store {
     /** One admin <-> one store. The unique FK enforces it in the database. */
     @OneToOne(optional = false)
     @JoinColumn(name = "store_admin_id", nullable = false, unique = true)
-    private User storeAdminId;
+    private User storeAdmin;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

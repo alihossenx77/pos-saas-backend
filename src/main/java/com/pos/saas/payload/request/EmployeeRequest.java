@@ -22,8 +22,8 @@ public class EmployeeRequest {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "Password must contain at least one letter and one digit")
     private String password;
 
-    @Pattern(regexp = "^\\+?[0-9 ()-]{7,20}$",
-            message = "Phone must be 7-20 characters: digits, spaces, ( ) - and an optional leading +")
+    @Pattern(regexp = "^(|\\+?[0-9 ()-]{7,20})$",
+            message = "Please provide a valid phone number")
     private String phone;
 
     @NotNull(message = "role is required (ROLE_BRANCH_MANAGER or ROLE_CASHIER)")

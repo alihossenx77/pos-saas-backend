@@ -10,7 +10,7 @@ spring:
     password: ${DB_PASSWORD:123456}
   jpa:
     hibernate:
-      ddl-auto: create        # switch to Flyway migrations before production
+      ddl-auto: update        # NOT "create": create drops every table on each restart. Use Flyway before production
     open-in-view: false
     properties:
       hibernate:

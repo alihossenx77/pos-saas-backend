@@ -12,8 +12,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByStoreId(Long storeId);
     List<User> findByBranchId(Long branchId);
-    boolean existsByStoreId(Long storeId);
     boolean existsByBranchId(Long branchId);
 
-    boolean existsByIdAndStoreId(Long id, Long id1);
+    /** Does the store have any user other than the given one (the store admin)? */
+    boolean existsByStoreIdAndIdNot(Long storeId, Long id);
 }

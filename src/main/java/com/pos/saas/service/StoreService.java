@@ -7,6 +7,8 @@ import com.pos.saas.model.User;
 import com.pos.saas.payload.dto.StoreDto;
 import com.pos.saas.payload.request.StoreRequest;
 import com.pos.saas.repository.BranchRepository;
+import com.pos.saas.repository.CategoryRepository;
+import com.pos.saas.repository.ProductRepository;
 import com.pos.saas.repository.StoreRepository;
 import com.pos.saas.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,8 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final BranchRepository branchRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final AccessService access;
 
     /** One store per store admin. The name may be the same as any other store's name. */
@@ -31,16 +35,16 @@ public class StoreService {
     public StoreDto create(StoreRequest req) {
         User admin = access.currentAdmin();
 
-        if (storeRepository.existsByStoreAdminId(admin.getId())) {
+        if (admin.getStoreId() != null || storeRepository.existsByStoreAdminId(admin.getId())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "You already have a store. Add more locations as branches.");
         }
 
-        Store store = Store.builder().storeAdminId(admin).build();
+        Store store = Store.builder().storeAdmin(admin).build();
         apply(store, req);
         Store saved = storeRepository.save(store);
 
-        admin.setStoreId(saved.getId());      // <- the missing link
+        admin.setStoreId(saved.getId());      // link the admin to their store
         userRepository.save(admin);
 
         return StoreDto.from(saved);
@@ -74,12 +78,15 @@ public class StoreService {
     @Transactional
     public void delete(Long id) {
         Store store = access.ownedStore(id);
-        User admin = store.getStoreAdminId();
+        User admin = store.getStoreAdmin();
 
         // the admin themself doesn't count as an employee
-        if (branchRepository.existsByStoreId(id) || userRepository.existsByIdAndStoreId(id, admin.getId())) {
+        if (branchRepository.existsByStoreId(id)
+                || userRepository.existsByStoreIdAndIdNot(id, admin.getId())
+                || productRepository.existsByStoreId(id)
+                || categoryRepository.existsByStoreId(id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Remove this store's branches and employees before deleting it");
+                    "Remove this store's branches, employees, products and categories before deleting it");
         }
 
         admin.setStoreId(null);

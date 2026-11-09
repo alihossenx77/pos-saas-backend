@@ -1,6 +1,5 @@
 package com.pos.saas.payload.request;
 
-import com.pos.saas.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -24,11 +23,7 @@ public class StoreRequest {
     @Size(max = 255)
     private String address;
 
-    @NotBlank(message = "Store admin id req")
-    private User storeAdminId;
-
-    @Pattern(regexp = "^\\+?[0-9 ()-]{7,20}$",
-            message = "Phone must be 7-20 characters: digits, spaces, ( ) - and an optional leading +")
+    @Pattern(regexp = "^(|\\+?[0-9 ()-]{7,20})$", message = "Please provide a valid phone number")
     private String phone;
 
     @Email @Size(max = 150)

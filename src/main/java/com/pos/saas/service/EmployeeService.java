@@ -4,10 +4,9 @@ import com.pos.saas.domain.UserRole;
 import com.pos.saas.model.Branch;
 import com.pos.saas.model.Store;
 import com.pos.saas.model.User;
-import com.pos.saas.payload.UserDto;
+import com.pos.saas.payload.dto.UserDto;
 import com.pos.saas.payload.request.EmployeeRequest;
 import com.pos.saas.payload.request.EmployeeUpdateRequest;
-import com.pos.saas.repository.StoreRepository;
 import com.pos.saas.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * STORE_ADMIN    -> branch managers + cashiers in any branch of the stores they own.
+ * STORE_ADMIN    -> branch managers + cashiers in any branch of their store.
  * BRANCH_MANAGER -> cashiers of their own branch only.
  */
 @Service
@@ -33,7 +32,6 @@ public class EmployeeService {
             EnumSet.of(UserRole.ROLE_BRANCH_MANAGER, UserRole.ROLE_CASHIER);
 
     private final UserRepository userRepository;
-    private final StoreRepository storeRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessService access;
 

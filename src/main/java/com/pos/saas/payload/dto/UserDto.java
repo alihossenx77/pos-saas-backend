@@ -1,4 +1,4 @@
-package com.pos.saas.payload;
+package com.pos.saas.payload.dto;
 
 import com.pos.saas.domain.UserRole;
 import com.pos.saas.model.User;
