@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -60,5 +61,42 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByCustomer(@Param("customerId") Long customerId,
                                @Param("storeId") Long storeId,
                                @Param("branchId") Long branchId,
+                               Pageable pageable);
+
+    // ---------- shift report aggregates (orders created by a cashier inside a time window) ----------
+
+    long countByCashierIdAndCreatedAtBetween(Long cashierId, LocalDateTime from, LocalDateTime to);
+
+    List<Order> findTop5ByCashierIdAndCreatedAtBetweenOrderByCreatedAtDesc(Long cashierId, LocalDateTime from, LocalDateTime to);
+
+    @Query("""
+           select sum(o.totalAmount) from SalesOrder o
+           where o.cashier.id = :cashierId and o.createdAt between :fromTime and :toTime
+           """)
+    BigDecimal sumTotalByCashier(@Param("cashierId") Long cashierId,
+                                 @Param("fromTime") LocalDateTime fromTime,
+                                 @Param("toTime") LocalDateTime toTime);
+
+    /** rows: [PaymentType, Long orderCount, BigDecimal salesAmount] */
+    @Query("""
+           select o.paymentType, count(o), sum(o.totalAmount) from SalesOrder o
+           where o.cashier.id = :cashierId and o.createdAt between :fromTime and :toTime
+           group by o.paymentType
+           """)
+    List<Object[]> paymentBreakdown(@Param("cashierId") Long cashierId,
+                                    @Param("fromTime") LocalDateTime fromTime,
+                                    @Param("toTime") LocalDateTime toTime);
+
+    /** rows: [Long productId, String name, String sku, Long quantitySold, BigDecimal grossRevenue] */
+    @Query("""
+           select i.productId, i.productName, i.sku, sum(i.quantity), sum(i.lineTotal)
+           from SalesOrder o join o.items i
+           where o.cashier.id = :cashierId and o.createdAt between :fromTime and :toTime
+           group by i.productId, i.productName, i.sku
+           order by sum(i.quantity) desc
+           """)
+    List<Object[]> topProducts(@Param("cashierId") Long cashierId,
+                               @Param("fromTime") LocalDateTime fromTime,
+                               @Param("toTime") LocalDateTime toTime,
                                Pageable pageable);
 }

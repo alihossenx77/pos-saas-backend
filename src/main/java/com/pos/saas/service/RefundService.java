@@ -3,6 +3,7 @@ package com.pos.saas.service;
 import com.pos.saas.domain.OrderStatus;
 import com.pos.saas.model.Order;
 import com.pos.saas.model.Refund;
+import com.pos.saas.model.ShiftReport;
 import com.pos.saas.model.User;
 import com.pos.saas.payload.dto.RefundDto;
 import com.pos.saas.payload.request.RefundRequest;
@@ -31,6 +32,7 @@ public class RefundService {
     private final RefundRepository refundRepository;
     private final OrderRepository orderRepository;
     private final StockService stockService;
+    private final ShiftReportService shiftReportService;
     private final AccessService access;
 
     @Transactional
@@ -95,7 +97,6 @@ public class RefundService {
     }
 
     public List<RefundDto> byCashier(Long cashierId, int page, int size) {
-        System.out.println("Cashier Id -------- > "+ cashierId);
         User target = access.accessibleEmployee(cashierId);
         return refundRepository.findByCashierIdAndStoreIdOrderByCreatedAtDesc(
                         target.getId(), target.getStoreId(), Paging.of(page, size))
@@ -109,6 +110,15 @@ public class RefundService {
         User target = access.accessibleEmployee(cashierId);
         return refundRepository.findByCashierIdAndStoreIdAndCreatedAtBetweenOrderByCreatedAtDesc(
                         target.getId(), target.getStoreId(), from, to)
+                .stream().map(RefundDto::from).toList();
+    }
+
+    /** Refunds the shift's cashier processed while the shift was running. */
+    public List<RefundDto> byShift(Long shiftReportId) {
+        ShiftReport shift = shiftReportService.findAccessible(shiftReportId);
+        LocalDateTime to = shift.getShiftEnd() != null ? shift.getShiftEnd() : LocalDateTime.now();
+        return refundRepository.findByCashierIdAndStoreIdAndCreatedAtBetweenOrderByCreatedAtDesc(
+                        shift.getCashier().getId(), shift.getStoreId(), shift.getShiftStart(), to)
                 .stream().map(RefundDto::from).toList();
     }
 

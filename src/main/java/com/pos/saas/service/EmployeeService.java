@@ -7,6 +7,9 @@ import com.pos.saas.model.User;
 import com.pos.saas.payload.dto.UserDto;
 import com.pos.saas.payload.request.EmployeeRequest;
 import com.pos.saas.payload.request.EmployeeUpdateRequest;
+import com.pos.saas.repository.OrderRepository;
+import com.pos.saas.repository.RefundRepository;
+import com.pos.saas.repository.ShiftReportRepository;
 import com.pos.saas.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +35,9 @@ public class EmployeeService {
             EnumSet.of(UserRole.ROLE_BRANCH_MANAGER, UserRole.ROLE_CASHIER);
 
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final RefundRepository refundRepository;
+    private final ShiftReportRepository shiftReportRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessService access;
 
@@ -111,7 +117,14 @@ public class EmployeeService {
 
     @Transactional
     public void delete(Long id) {
-        userRepository.delete(loadManageable(id, access.currentUser()));
+        User target = loadManageable(id, access.currentUser());
+        if (orderRepository.existsByCashierId(target.getId())
+                || refundRepository.existsByCashierId(target.getId())
+                || shiftReportRepository.existsByCashierId(target.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "This employee has sales history and cannot be deleted. Set them inactive instead.");
+        }
+        userRepository.delete(target);
     }
 
     // ---- helpers ----

@@ -23,3 +23,5 @@ app:
     expiration-ms: 86400000   # 24h
   cors:
     allowed-origins: http://localhost:5173,http://localhost:3000
+  shifts:
+    require-open-shift: true   # true = cashiers must start a shift before they can sell

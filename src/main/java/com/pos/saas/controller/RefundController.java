@@ -59,6 +59,12 @@ public class RefundController {
         return ApiResponse.ok(refundService.byCashierInRange(cashierId, from, to));
     }
 
+    /** Refunds processed during one shift. */
+    @GetMapping("/shift/{shiftReportId}")
+    public ApiResponse<List<RefundDto>> byShift(@PathVariable Long shiftReportId) {
+        return ApiResponse.ok(refundService.byShift(shiftReportId));
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<RefundDto> get(@PathVariable Long id) {
         return ApiResponse.ok(refundService.get(id));

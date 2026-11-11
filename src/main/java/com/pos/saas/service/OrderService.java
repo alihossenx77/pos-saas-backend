@@ -9,9 +9,9 @@ import com.pos.saas.payload.dto.OrderDto;
 import com.pos.saas.payload.request.OrderItemRequest;
 import com.pos.saas.payload.request.OrderRequest;
 import com.pos.saas.repository.*;
-import com.pos.saas.repository.RefundRepository;
 import com.pos.saas.util.Paging;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +36,13 @@ public class OrderService {
     private final CustomerRepository customerRepository;
     private final RefundRepository refundRepository;
     private final StockService stockService;
+    private final ShiftReportRepository shiftReportRepository;
+    private final ShiftReportService shiftReportService;
     private final AccessService access;
+
+    /** app.shifts.require-open-shift=true -> a cashier must start a shift before selling. */
+    @Value("${app.shifts.require-open-shift:true}")
+    private boolean requireOpenShift;
 
     // ------------------------------------------------------------------ create (the sale)
 
@@ -49,6 +55,9 @@ public class OrderService {
         User cashier = access.currentStoreUser();
         if (cashier.getBranchId() == null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "You are not assigned to a branch");
+        }
+        if (requireOpenShift && !shiftReportRepository.existsByCashierIdAndShiftEndIsNull(cashier.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Start your shift before making sales");
         }
         Long storeId = cashier.getStoreId();
         Long branchId = cashier.getBranchId();
