@@ -31,6 +31,7 @@ public class BranchService {
         if (req.getStoreId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "storeId is required");
         }
+
         Store store = access.ownedStore(req.getStoreId());
         validateHours(req);
 

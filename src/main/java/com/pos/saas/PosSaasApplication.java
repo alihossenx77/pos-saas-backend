@@ -7,6 +7,5 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PosSaasApplication {
     public static void main(String[] args) {
         SpringApplication.run(PosSaasApplication.class, args);
-        System.out.println("Project Running => http://localhost:5000/");
     }
 }

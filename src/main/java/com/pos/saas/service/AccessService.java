@@ -96,6 +96,26 @@ public class AccessService {
         return b;
     }
 
+    /**
+     * An employee (cashier / manager) of the caller's store whose sales the caller may look at:
+     * store admin -> anyone in the store, branch manager -> people in own branch, cashier -> only self.
+     */
+    public User accessibleEmployee(Long employeeId) {
+        User actor = currentStoreUser();
+        User target = userRepository.findById(employeeId)
+                .filter(t -> Objects.equals(t.getStoreId(), actor.getStoreId()))
+                .orElseThrow(() -> notFound("Employee not found"));
+
+        boolean ok = switch (actor.getRole()) {
+            case ROLE_STORE_ADMIN -> true;
+            case ROLE_BRANCH_MANAGER -> Objects.equals(target.getBranchId(), actor.getBranchId());
+            case ROLE_CASHIER -> actor.getId().equals(target.getId());
+            default -> false;
+        };
+        if (!ok) throw notFound("Employee not found");
+        return target;
+    }
+
     public static ResponseStatusException notFound(String message) {
         return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
     }

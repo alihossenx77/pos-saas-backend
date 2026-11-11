@@ -1,9 +1,6 @@
 package com.pos.saas.payload.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.DayOfWeek;
@@ -13,7 +10,7 @@ import java.util.Set;
 @Data
 public class BranchRequest {
 
-    @NotBlank(message = "Store Id is required")
+    @NotNull(message = "Store ID is required")
     private Long storeId;                 // required when creating; ignored on update
 
     @NotBlank(message = "Branch name is required")
