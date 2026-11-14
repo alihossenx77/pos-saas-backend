@@ -33,4 +33,8 @@ public interface ShiftReportRepository extends JpaRepository<ShiftReport, Long> 
     List<ShiftReport> findByCashierIdAndStoreIdOrderByShiftStartDesc(Long cashierId, Long storeId, Pageable pageable);
     List<ShiftReport> findByCashierIdAndStoreIdAndShiftStartBetweenOrderByShiftStartDesc(
             Long cashierId, Long storeId, LocalDateTime from, LocalDateTime to);
+
+    long countByBranchIdAndShiftEndIsNull(Long branchId);
+    long countByStoreIdAndShiftEndIsNull(Long storeId);
+    List<ShiftReport> findByStoreIdAndShiftEndIsNullAndShiftStartBefore(Long storeId, LocalDateTime before);
 }

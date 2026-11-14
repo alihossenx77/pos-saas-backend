@@ -25,3 +25,7 @@ app:
     allowed-origins: http://localhost:5173,http://localhost:3000
   shifts:
     require-open-shift: true   # true = cashiers must start a shift before they can sell
+  super-admin: # creates the first super admin at startup (leave empty to disable)
+    email: ${SUPER_ADMIN_EMAIL:admin@shop.com}
+    password: ${SUPER_ADMIN_PASSWORD:admin@1234}
+    name: Super Admin

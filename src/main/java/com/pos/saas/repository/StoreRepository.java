@@ -11,4 +11,6 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     Optional<Store> findByStoreAdminId(Long storeAdminId);
     boolean existsByStoreAdminId(Long storeAdminId);
     List<Store> findByStatus(StoreStatus status);
+
+    long countByStatus(StoreStatus status);
 }

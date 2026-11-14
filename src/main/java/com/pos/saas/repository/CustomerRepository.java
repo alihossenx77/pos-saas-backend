@@ -27,4 +27,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
            order by c.fullName asc
            """)
     List<Customer> search(@Param("storeId") Long storeId, @Param("q") String q, Pageable pageable);
+
+    long countByStoreId(Long storeId);
 }

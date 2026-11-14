@@ -24,4 +24,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                or lower(coalesce(p.brand, '')) like lower(concat('%', :q, '%')))
            """)
     List<Product> search(@Param("storeId") Long storeId, @Param("q") String q);
+
+    long countByStoreId(Long storeId);
 }

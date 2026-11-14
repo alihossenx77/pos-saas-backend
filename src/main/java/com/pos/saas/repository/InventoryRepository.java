@@ -22,4 +22,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select i from Inventory i where i.branchId = :branchId and i.product.id = :productId")
     Optional<Inventory> findForUpdate(@Param("branchId") Long branchId, @Param("productId") Long productId);
+
+    List<Inventory> findByStoreIdAndQuantityLessThanEqual(Long storeId, Integer quantity);
+    List<Inventory> findByBranchIdAndQuantityLessThanEqual(Long branchId, Integer quantity);
 }

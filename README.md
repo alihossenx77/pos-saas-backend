@@ -20,7 +20,7 @@ If you created the `users` table before `ROLE_USER` was added, drop the
 | POST | /auth/login | public |
 | GET | /auth/me | logged-in user |
 
-## Try it
+## Try it it now
 ```bash
 curl -X POST localhost:5000/auth/signup -H "Content-Type: application/json" \
   -d '{"fullName":"Ali Khan","email":"ali@shop.com","password":"secret123","phone":"0170000","storeName":"Ali Mart"}'
